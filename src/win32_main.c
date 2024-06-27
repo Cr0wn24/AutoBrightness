@@ -79,6 +79,7 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, PSTR command_line, int show
       if(hour >= entry->hour)
       {
         SetBrightness(hMonitor, entry->brightness);
+        break;
       }
     }
     
