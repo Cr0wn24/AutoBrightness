@@ -9,6 +9,15 @@
 #pragma comment(lib, "dxva2.lib")
 #pragma comment(lib, "user32.lib")
 
+typedef struct ConfigEntry ConfigEntry;
+struct ConfigEntry
+{
+  WORD hour;
+  DWORD brightness;
+};
+
+#define ArrayCount(arr) (sizeof(arr)/sizeof(*arr))
+
 static void 
 SetBrightness(HANDLE hMonitor, DWORD new_brightness) 
 {
@@ -49,6 +58,14 @@ int WINAPI
 WinMain(HINSTANCE instance, HINSTANCE prev_instance, PSTR command_line, int show_code)
 {
   HMONITOR hMonitor = MonitorFromWindow(GetDesktopWindow(), MONITOR_DEFAULTTOPRIMARY);
+  
+  ConfigEntry entries[] = 
+  {
+#define X(hour, brightness) {hour, brightness},
+#include "config_entries.c"
+#undef X
+  };
+  
   while(1)
   {
     SYSTEMTIME local_time = {0};
@@ -56,17 +73,13 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, PSTR command_line, int show
     
     WORD hour = local_time.wHour;
     
-    if(hour >= 7 && hour < 18)
+    for(int config_entry_idx = 0; config_entry_idx < ArrayCount(entries); ++config_entry_idx)
     {
-      SetBrightness(hMonitor, 80);
-    }
-    else if(hour >= 18 && hour < 20)
-    {
-      SetBrightness(hMonitor, 50);
-    }
-    else if(hour >= 20)
-    {
-      SetBrightness(hMonitor, 20);
+      ConfigEntry *entry = entries + (ArrayCount(entries)-config_entry_idx-1);
+      if(hour >= entry->hour)
+      {
+        SetBrightness(hMonitor, entry->brightness);
+      }
     }
     
     DWORD seconds_to_sleep = 5*60;
