@@ -1,6 +1,6 @@
 ## AutoBrightness
 
-This is just a small program to set the brightness of the primary monitor depending on the time of day. 
+This is just a small program to set the brightness of every monitor depending on the time of day. 
 
 ### Building
 
@@ -9,7 +9,7 @@ enabled and a ``build`` folder will be created where the exectuable resides. Dou
 
 ### Usage
 
-Edit the times and brightness values in [src/config_entries.c](src/config_entries.c) to your preference. Start the program
+Edit the times and brightness values in [src/config_entries.c](src/config_entries.c) to your preference. Rebuild the program then start it
 and it will continue to run in the background. It is recommended to [add this program to your startup programs](https://support.microsoft.com/en-us/windows/add-an-app-to-run-automatically-at-startup-in-windows-10-150da165-dcd9-7230-517b-cf3c295d89dd) so you
                                                                                                                 don't have to think about starting the program each time you restart your computer.
                                                                                                                 

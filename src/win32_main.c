@@ -9,6 +9,8 @@
 #pragma comment(lib, "dxva2.lib")
 #pragma comment(lib, "user32.lib")
 
+#define ArrayCount(arr) (sizeof(arr)/sizeof(*arr))
+
 typedef struct ConfigEntry ConfigEntry;
 struct ConfigEntry
 {
@@ -16,7 +18,8 @@ struct ConfigEntry
   DWORD brightness;
 };
 
-#define ArrayCount(arr) (sizeof(arr)/sizeof(*arr))
+static HMONITOR monitors[32] = {0};
+static int monitors_count;
 
 static void 
 SetBrightness(HANDLE hMonitor, DWORD new_brightness) 
@@ -54,10 +57,18 @@ SetBrightness(HANDLE hMonitor, DWORD new_brightness)
   }
 }
 
+static BOOL 
+MonitorEnumCallback(HMONITOR hmonitor, HDC hdc, LPRECT rect, LPARAM user_data)
+{
+  monitors_count = 0;
+  monitors[monitors_count++] = hmonitor;
+  BOOL result = TRUE;
+  return(result);
+}
+
 int WINAPI 
 WinMain(HINSTANCE instance, HINSTANCE prev_instance, PSTR command_line, int show_code)
 {
-  HMONITOR hMonitor = MonitorFromWindow(GetDesktopWindow(), MONITOR_DEFAULTTOPRIMARY);
   
   ConfigEntry entries[] = 
   {
@@ -68,6 +79,9 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, PSTR command_line, int show
   
   while(1)
   {
+    RECT rect = {0};
+    EnumDisplayMonitors(0, 0, MonitorEnumCallback, 0);
+    
     SYSTEMTIME local_time = {0};
     GetLocalTime(&local_time);
     
@@ -78,7 +92,10 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, PSTR command_line, int show
       ConfigEntry *entry = entries + (ArrayCount(entries)-config_entry_idx-1);
       if(hour >= entry->hour)
       {
-        SetBrightness(hMonitor, entry->brightness);
+        for(int i = 0; i < monitors_count; ++i)
+        {
+          SetBrightness(monitors[i], entry->brightness);
+        }
         break;
       }
     }
