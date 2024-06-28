@@ -60,7 +60,6 @@ SetBrightness(HANDLE hMonitor, DWORD new_brightness)
 static BOOL 
 MonitorEnumCallback(HMONITOR hmonitor, HDC hdc, LPRECT rect, LPARAM user_data)
 {
-  monitors_count = 0;
   monitors[monitors_count++] = hmonitor;
   BOOL result = TRUE;
   return(result);
@@ -79,6 +78,7 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, PSTR command_line, int show
   
   while(1)
   {
+    monitors_count = 0;
     RECT rect = {0};
     EnumDisplayMonitors(0, 0, MonitorEnumCallback, 0);
     
